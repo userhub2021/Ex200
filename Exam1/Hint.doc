@@ -1,0 +1,69 @@
+RHEL 10試験対策の重要ヒント
+
+1. DNF 5 のコマンド体系
+
+RHEL 10ではDNFが DNF 5 に大幅アップデートされています。基本的な dnf install などの構文は従来と互換性がありますが、バックエンドの高速化に伴いコマンド出力形式が一部変更されています。設定検証時に戸惑わないよう、実機での出力形式に慣れておきましょう。
+
+2. NetworkManager の keyfile 管理
+
+旧来の /etc/sysconfig/network-scripts/ ディレクトリは存在しません。設定を変更する場合は、必ず以下のコマンドを使用してください。
+
+# 静的IPの設定
+nmcli connection modify "enp1s0" ipv4.addresses "192.168.122.100/24" ipv4.gateway "192.168.122.1" ipv4.method manual
+nmcli connection modify "enp1s0" ipv4.dns "8.8.8.8"
+nmcli connection up "enp1s0"
+
+
+これにより、自動的に /etc/NetworkManager/system-connections/enp1s0.nmconnection というkeyfileが生成または更新されます。
+
+3. systemd タイマーの設定方法
+
+タイマーを作成するには、サービス（.service）とタイマー（.timer）の2つのファイルを /etc/systemd/system/ に配置する必要があります。
+
+sys-cleanup.service の例:
+
+[Unit]
+Description=System Cleanup Service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c '/bin/echo "System Cleanup executed at $(date)" >> /var/log/sys_cleanup.log'
+
+
+sys-cleanup.timer の例:
+
+[Unit]
+Description=Run sys-cleanup every 15 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+
+[Install]
+WantedBy=timers.target
+
+
+作成後、systemctl daemon-reload を実行し、systemctl enable --now sys-cleanup.timer で有効化します。
+
+4. Flatpak の操作
+
+公式のFlathubリポジトリを登録する基本的なコマンドは以下の通りです。
+
+flatpak remote-add --if-not-exists flathub [https://dl.flathub.org/repo/flathub.flatpakrepo](https://dl.flathub.org/repo/flathub.flatpakrepo)
+
+
+アプリケーションのインストールは以下のように行います。
+
+flatpak install flathub org.gnome.peep -y
+
+
+5. シェルスクリプトの作成
+
+引数チェックには [ $# -eq 0 ] を使い、ディレクトリ存在チェックには [ ! -d "$1" ] を、ファイル走査には以下のように for ループを利用します。
+
+for file in "$1"/*; do
+    if [ -f "$file" ]; then
+        echo "File: $(basename "$file")"
+    fi
+done
+
