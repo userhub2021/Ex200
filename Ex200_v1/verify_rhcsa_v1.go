@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
+	"time"
 )
 
 const (
@@ -60,6 +61,8 @@ func main() {
 	fmt.Printf("%s=====================================================%s\n", Blue, NC)
 	fmt.Printf("%s    RHCSA EX200 (RHEL 10) 模擬試験 自動採点スクリプト (Go版)%s\n", Blue, NC)
 	fmt.Printf("%s=====================================================%s\n", Blue, NC)
+
+	writeExecutionLog("verify_rhcsa_v1", "STARTED", "Grading/verification started.")
 
 	// -------------------------------------------------------------
 	// 1. Rescue Mode Check (Root Password change verify)
@@ -329,4 +332,32 @@ func main() {
 		fmt.Printf("  ステータス: %s不合格 (Keep studying!)%s\n", Red, NC)
 	}
 	fmt.Printf("%s=====================================================%s\n", Blue, NC)
+
+	statusStr := "FAIL"
+	if totalScore >= passMark {
+		statusStr = "PASS"
+	}
+	resultDetail := fmt.Sprintf("Score: %d/%d, Status: %s", totalScore, maxScore, statusStr)
+	writeExecutionLog("verify_rhcsa_v1", "FINISHED", resultDetail)
+}
+
+func writeExecutionLog(progName, status, detail string) {
+	logFile := "/var/log/ex200_execution.log"
+	f, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		logFile = "/tmp/ex200_execution.log"
+		f, err = os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return
+		}
+	}
+	defer f.Close()
+
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	username := "unknown"
+	if u, err := user.Current(); err == nil {
+		username = u.Username
+	}
+
+	fmt.Fprintf(f, "[%s] [%s] User: %s | Status: %s | Details: %s\n", timestamp, progName, username, status, detail)
 }

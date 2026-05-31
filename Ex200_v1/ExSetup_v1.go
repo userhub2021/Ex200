@@ -8,6 +8,7 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func runCmd(name string, args ...string) error {
@@ -59,8 +60,11 @@ func main() {
 	// Check if running as root
 	if os.Geteuid() != 0 {
 		fmt.Fprintln(os.Stderr, "エラー: このスクリプトは root 権限で実行する必要があります。")
+		writeExecutionLog("ExSetup_v1", "FAILED", "Error: Setup must be run as root.")
 		os.Exit(1)
 	}
+
+	writeExecutionLog("ExSetup_v1", "STARTED", "Environment setup initiated.")
 
 	// 1. Cleanup
 	cleanup()
@@ -104,6 +108,7 @@ func main() {
 	fmt.Println("対象の問題: 【課題 2〜9】, 【課題 12〜14】")
 	fmt.Println("これで模擬試験問題の練習準備が整いました。")
 	fmt.Println("=====================================================")
+	writeExecutionLog("ExSetup_v1", "SUCCESS", "Environment setup completed successfully.")
 }
 
 func cleanup() {
@@ -288,4 +293,25 @@ func setupTask14() {
 		f.Close()
 	}
 	fmt.Println("✔ シェルスクリプト検証用のテスト環境を配置しました。")
+}
+
+func writeExecutionLog(progName, status, detail string) {
+	logFile := "/var/log/ex200_execution.log"
+	f, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		logFile = "/tmp/ex200_execution.log"
+		f, err = os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return
+		}
+	}
+	defer f.Close()
+
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	username := "unknown"
+	if u, err := user.Current(); err == nil {
+		username = u.Username
+	}
+
+	fmt.Fprintf(f, "[%s] [%s] User: %s | Status: %s | Details: %s\n", timestamp, progName, username, status, detail)
 }

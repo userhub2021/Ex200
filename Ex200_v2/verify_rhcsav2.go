@@ -5,8 +5,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 	"syscall"
+	"time"
 )
 
 type TestResult struct {
@@ -19,6 +21,8 @@ type TestResult struct {
 func main() {
 	fmt.Println("=== RHCSA EX200 V2 Answer Checker (RHEL 10) ===")
 	fmt.Println("Checking configurations...")
+
+	writeExecutionLog("verify_rhcsav2", "STARTED", "Grading/verification started.")
 
 	results := []TestResult{
 		checkTask1(),
@@ -46,11 +50,15 @@ func main() {
 
 	fmt.Println("\n--------------------------")
 	fmt.Printf("TOTAL SCORE: %d / %d\n", totalScore, maxScore)
+	statusStr := "FAILED"
 	if totalScore >= 70 {
 		fmt.Println("Result: PASSED (70% or higher)")
+		statusStr = "PASSED"
 	} else {
 		fmt.Println("Result: FAILED (Required: 70% or higher)")
 	}
+	resultDetail := fmt.Sprintf("Score: %d/%d, Status: %s", totalScore, maxScore, statusStr)
+	writeExecutionLog("verify_rhcsav2", "FINISHED", resultDetail)
 }
 
 func checkTask1() TestResult {
@@ -628,4 +636,25 @@ func checkTask9() TestResult {
 
 	res.Message = strings.Join(messages, " ")
 	return res
+}
+
+func writeExecutionLog(progName, status, detail string) {
+	logFile := "/var/log/ex200_execution.log"
+	f, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		logFile = "/tmp/ex200_execution.log"
+		f, err = os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return
+		}
+	}
+	defer f.Close()
+
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	username := "unknown"
+	if u, err := user.Current(); err == nil {
+		username = u.Username
+	}
+
+	fmt.Fprintf(f, "[%s] [%s] User: %s | Status: %s | Details: %s\n", timestamp, progName, username, status, detail)
 }

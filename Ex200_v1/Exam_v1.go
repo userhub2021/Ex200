@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 func runCommand(name string, args ...string) error {
@@ -84,8 +85,11 @@ func main() {
 	// 実行ユーザーのチェック
 	if os.Geteuid() != 0 {
 		fmt.Fprintln(os.Stderr, "エラー: このスクリプトは root 権限で実行する必要があります。")
+		writeExecutionLog("Exam_v1", "FAILED", "Error: Setup must be run as root.")
 		os.Exit(1)
 	}
+
+	writeExecutionLog("Exam_v1", "STARTED", "Environment setup initiated (excluding LVM/root config logic).")
 
 	fmt.Println("=====================================================")
 	fmt.Println("   RHCSA EX200 v10 模擬試験環境の構築を開始します (Go版)")
@@ -244,41 +248,7 @@ func main() {
 	// -------------------------------------------------------------
 	// 3. 追加ディスクのシミュレーション (5GB)
 	// -------------------------------------------------------------
-	fmt.Println("[2/4] 追加ディスク (/dev/vdb 5GB) のシミュレーションを設定中...")
-
-	if _, err := os.Stat("/var/lib/mock_extra_disk.img"); os.IsNotExist(err) {
-		file, err := os.Create("/var/lib/mock_extra_disk.img")
-		if err != nil {
-			fmt.Printf("エラー: イメージファイルの作成に失敗しました: %v\n", err)
-			os.Exit(1)
-		}
-		if err := file.Truncate(5 * 1024 * 1024 * 1024); err != nil {
-			file.Close()
-			fmt.Printf("エラー: イメージファイルの拡張に失敗しました: %v\n", err)
-			os.Exit(1)
-		}
-		file.Close()
-
-		freeLoop, err := runCommandWithOutput("losetup", "-f")
-		if err != nil || freeLoop == "" {
-			fmt.Println("エラー: 利用可能なループバックデバイスが見つかりません。")
-			os.Exit(1)
-		}
-
-		if err := runCommand("losetup", freeLoop, "/var/lib/mock_extra_disk.img"); err != nil {
-			fmt.Printf("エラー: ループバックデバイスの関連付けに失敗しました: %v\n", err)
-			os.Exit(1)
-		}
-
-		os.Remove("/dev/vdb")
-		if err := os.Symlink(freeLoop, "/dev/vdb"); err != nil {
-			fmt.Printf("エラー: シンボリックリンクの作成に失敗しました: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Printf("✔ 仮想ディスク /dev/vdb を正常に配置しました（実体: %s）\n", freeLoop)
-	} else {
-		fmt.Println("✔ 仮想ディスク /dev/vdb は既に配置されています。スキップします。")
-	}
+	fmt.Println("[2/4] 追加ディスク (/dev/vdb 5GB) のシミュレーション設定はスキップされました（LVM設定ロジック削除）。")
 
 	// -------------------------------------------------------------
 	// 4. 【課題7】nobody所有ファイルの配置 (ファイル検索の前提条件)
@@ -346,4 +316,26 @@ func main() {
 	fmt.Println("🎉 環境セットアップが正常に完了しました！")
 	fmt.Println("これで Canvas 内の全14問に挑戦する準備が整いました。")
 	fmt.Println("=====================================================")
+	writeExecutionLog("Exam_v1", "SUCCESS", "Environment setup completed successfully.")
+}
+
+func writeExecutionLog(progName, status, detail string) {
+	logFile := "/var/log/ex200_execution.log"
+	f, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		logFile = "/tmp/ex200_execution.log"
+		f, err = os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return
+		}
+	}
+	defer f.Close()
+
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	username := "unknown"
+	if u, err := user.Current(); err == nil {
+		username = u.Username
+	}
+
+	fmt.Fprintf(f, "[%s] [%s] User: %s | Status: %s | Details: %s\n", timestamp, progName, username, status, detail)
 }
