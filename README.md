@@ -177,61 +177,61 @@ graph TD
     Ex200 --> Exam1["Exam1/ (模擬試験 第1弾 - シェルスクリプト版)"]
 
     Ex200_v1 --> v1_md["Exam_v1.md (問題文)"]
-    Ex200_v1 --> v1_go_all["Exam_v1.go (全体環境構築スクリプト)"]
-    Ex200_v1 --> v1_go_setup["ExSetup_v1.go (環境構築スクリプト - root/LVM除外)"]
+    Ex200_v1 --> v1_go_all["Exam_v1.go (環境構築スクリプト - root/LVM除外版)"]
+    Ex200_v1 --> v1_go_setup["ExSetup_v1.go (環境構築スクリプト - root/LVM除外/詳細表示版)"]
     Ex200_v1 --> v1_go_verify["verify_rhcsa_v1.go (自動採点スクリプト)"]
 
     Ex200_v2 --> v2_md["Ex200V2.md (問題文)"]
     Ex200_v2 --> v2_go_setup["ExSetup_v2.go (環境構築スクリプト)"]
     Ex200_v2 --> v2_go_verify["verify_rhcsav2.go (自動採点スクリプト)"]
 
-    Exam1 --> v1_sh["Exam_v1.sh (環境構築スクリプト)"]
+    Exam1 --> v1_sh["Exam_v1.sh (環境構築スクリプト - root/LVM除外版)"]
     Exam1 --> v1_sh_verify["verify_rhcsa_v10.sh (自動採点スクリプト)"]
     Exam1 --> v1_hint["Hint.doc (ヒント集)"]
 ```
-
-### 6-1. 模擬試験 第1弾 (Ex200_v1)
-Go言語ベースで構築された模擬試験第1弾です。
-* **問題文の参照**:
-  * [Exam_v1.md](file:///root/Ex200/Ex200_v1/Exam_v1.md)
-* **環境構築プログラムの実行**:
-  * **Root問題およびLVM問題を除外した環境構築を行う場合 (推奨)**:
-    ```bash
-    go run /root/Ex200/Ex200_v1/ExSetup_v1.go
-    ```
-  * **全問題（Root/LVM含む）の環境構築を行う場合**:
-    ```bash
-    go run /root/Ex200/Ex200_v1/Exam_v1.go
-    ```
-* **自動採点プログラムの実行**:
-  ```bash
-  go run /root/Ex200/Ex200_v1/verify_rhcsa_v1.go
-  ```
-
-### 6-2. 模擬試験 第2弾 (Ex200_v2)
-Go言語ベースで構築された、RHEL 10向けの追加/修正問題を含む模擬試験第2弾です。
-* **問題文の参照**:
-  * [Ex200V2.md](file:///root/Ex200/Ex200_v2/Ex200V2.md)
-* **環境構築プログラムの実行**:
-  ```bash
-  go run /root/Ex200/Ex200_v2/ExSetup_v2.go
-  ```
-* **自動採点プログラムの実行**:
-  ```bash
-  go run /root/Ex200/Ex200_v2/verify_rhcsav2.go
-  ```
-
-### 6-3. レガシー・シェルスクリプト版 (Exam1)
-Bashシェルスクリプトで記述された、模擬試験第1弾の初期バージョンです。
-* **環境構築スクリプトの実行**:
-  ```bash
-  bash /root/Ex200/Exam1/Exam_v1.sh
-  ```
-* **自動採点スクリプトの実行**:
-  ```bash
-  bash /root/Ex200/Exam1/verify_rhcsa_v10.sh
-  ```
-* **ヒント・解説ドキュメントの参照**:
-  * [Hint.doc](file:///root/Ex200/Exam1/Hint.doc)
+ 
+ ### 6-1. 模擬試験 第1弾 (Ex200_v1)
+ Go言語ベースで構築された模擬試験第1弾です。
+ * **問題文の参照**:
+   * [Exam_v1.md](file:///root/Ex200/Ex200_v1/Exam_v1.md)
+ * **環境構築プログラムの実行 (※すべてのスクリプトからrootおよびLVMの構築ロジックは除外されています)**:
+   * **詳細な進捗表示付きで環境構築を行う場合**:
+     ```bash
+     go run /root/Ex200/Ex200_v1/ExSetup_v1.go
+     ```
+   * **標準形式で環境構築を行う場合**:
+     ```bash
+     go run /root/Ex200/Ex200_v1/Exam_v1.go
+     ```
+ * **自動採点プログラムの実行**:
+   ```bash
+   go run /root/Ex200/Ex200_v1/verify_rhcsa_v1.go
+   ```
+ 
+ ### 6-2. 模擬試験 第2弾 (Ex200_v2)
+ Go言語ベースで構築された、RHEL 10向けの追加/修正問題を含む模擬試験第2弾です。
+ * **問題文の参照**:
+   * [Ex200V2.md](file:///root/Ex200/Ex200_v2/Ex200V2.md)
+ * **環境構築プログラムの実行**:
+   ```bash
+   go run /root/Ex200/Ex200_v2/ExSetup_v2.go
+   ```
+ * **自動採点プログラムの実行**:
+   ```bash
+   go run /root/Ex200/Ex200_v2/verify_rhcsav2.go
+   ```
+ 
+ ### 6-3. レガシー・シェルスクリプト版 (Exam1)
+ Bashシェルスクリプトで記述された、模擬試験第1弾の初期バージョンです。
+ * **環境構築スクリプトの実行 (※LVMおよびrootの構築ロジックは除外されています)**:
+   ```bash
+   bash /root/Ex200/Exam1/Exam_v1.sh
+   ```
+ * **自動採点スクリプトの実行**:
+   ```bash
+   bash /root/Ex200/Exam1/verify_rhcsa_v10.sh
+   ```
+ * **ヒント・解説ドキュメントの参照**:
+   * [Hint.doc](file:///root/Ex200/Exam1/Hint.doc)
 
 

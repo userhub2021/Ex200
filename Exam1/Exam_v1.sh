@@ -128,23 +128,7 @@ fi
 # -------------------------------------------------------------
 # 3. 追加ディスクのシミュレーション (5GB)
 # -------------------------------------------------------------
-echo "[2/4] 追加ディスク (/dev/vdb 5GB) のシミュレーションを設定中..."
-
-if [ ! -f /var/lib/mock_extra_disk.img ]; then
-    truncate -s 5G /var/lib/mock_extra_disk.img
-    FREE_LOOP=$(losetup -f)
-
-    if [ -z "$FREE_LOOP" ]; then
-        echo "エラー: 利用可能なループバックデバイスが見つかりません。"
-        exit 1
-    fi
-
-    losetup "$FREE_LOOP" /var/lib/mock_extra_disk.img
-    ln -sf "$FREE_LOOP" /dev/vdb
-    echo "✔ 仮想ディスク /dev/vdb を正常に配置しました（実体: $FREE_LOOP）"
-else
-    echo "✔ 仮想ディスク /dev/vdb は既に配置されています。スキップします。"
-fi
+echo "[2/4] 追加ディスク (/dev/vdb 5GB) のシミュレーション設定はスキップされました（LVM設定ロジック削除）。"
 
 
 # -------------------------------------------------------------

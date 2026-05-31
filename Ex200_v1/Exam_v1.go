@@ -244,41 +244,7 @@ func main() {
 	// -------------------------------------------------------------
 	// 3. 追加ディスクのシミュレーション (5GB)
 	// -------------------------------------------------------------
-	fmt.Println("[2/4] 追加ディスク (/dev/vdb 5GB) のシミュレーションを設定中...")
-
-	if _, err := os.Stat("/var/lib/mock_extra_disk.img"); os.IsNotExist(err) {
-		file, err := os.Create("/var/lib/mock_extra_disk.img")
-		if err != nil {
-			fmt.Printf("エラー: イメージファイルの作成に失敗しました: %v\n", err)
-			os.Exit(1)
-		}
-		if err := file.Truncate(5 * 1024 * 1024 * 1024); err != nil {
-			file.Close()
-			fmt.Printf("エラー: イメージファイルの拡張に失敗しました: %v\n", err)
-			os.Exit(1)
-		}
-		file.Close()
-
-		freeLoop, err := runCommandWithOutput("losetup", "-f")
-		if err != nil || freeLoop == "" {
-			fmt.Println("エラー: 利用可能なループバックデバイスが見つかりません。")
-			os.Exit(1)
-		}
-
-		if err := runCommand("losetup", freeLoop, "/var/lib/mock_extra_disk.img"); err != nil {
-			fmt.Printf("エラー: ループバックデバイスの関連付けに失敗しました: %v\n", err)
-			os.Exit(1)
-		}
-
-		os.Remove("/dev/vdb")
-		if err := os.Symlink(freeLoop, "/dev/vdb"); err != nil {
-			fmt.Printf("エラー: シンボリックリンクの作成に失敗しました: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Printf("✔ 仮想ディスク /dev/vdb を正常に配置しました（実体: %s）\n", freeLoop)
-	} else {
-		fmt.Println("✔ 仮想ディスク /dev/vdb は既に配置されています。スキップします。")
-	}
+	fmt.Println("[2/4] 追加ディスク (/dev/vdb 5GB) のシミュレーション設定はスキップされました（LVM設定ロジック削除）。")
 
 	// -------------------------------------------------------------
 	// 4. 【課題7】nobody所有ファイルの配置 (ファイル検索の前提条件)
