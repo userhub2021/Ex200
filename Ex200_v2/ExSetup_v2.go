@@ -5,7 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
+	"time"
 )
 
 func runCmd(name string, args ...string) error {
@@ -26,8 +28,11 @@ func main() {
 	// check if running as root
 	if os.Getuid() != 0 {
 		fmt.Println("Error: This setup script must be run as root.")
+		writeExecutionLog("ExSetup_v2", "FAILED", "Error: Setup must be run as root.")
 		os.Exit(1)
 	}
+
+	writeExecutionLog("ExSetup_v2", "STARTED", "Environment setup V2 initiated.")
 
 	// 1. Cleanup
 	cleanup()
@@ -56,6 +61,7 @@ func main() {
 	fmt.Println("\n=== Setup Completed Successfully ===")
 	fmt.Println("Ready for the exam. Read instructions in:")
 	fmt.Println("  /root/Ex200/Ex200_v2/Ex200V2.md")
+	writeExecutionLog("ExSetup_v2", "SUCCESS", "Environment setup V2 completed successfully.")
 }
 
 func cleanup() {
@@ -226,4 +232,25 @@ func setupTask9() {
 	fmt.Println("\n[9/9] Generating dummy system error logs for Task 9...")
 	// Force systemd to log an error in journald by trying to start a non-existent service
 	runCmdSilent("systemctl", "start", "non_existent_dummy_error_trigger.service")
+}
+
+func writeExecutionLog(progName, status, detail string) {
+	logFile := "/var/log/ex200_execution.log"
+	f, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		logFile = "/tmp/ex200_execution.log"
+		f, err = os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return
+		}
+	}
+	defer f.Close()
+
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	username := "unknown"
+	if u, err := user.Current(); err == nil {
+		username = u.Username
+	}
+
+	fmt.Fprintf(f, "[%s] [%s] User: %s | Status: %s | Details: %s\n", timestamp, progName, username, status, detail)
 }

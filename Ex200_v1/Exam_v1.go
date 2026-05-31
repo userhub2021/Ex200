@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 func runCommand(name string, args ...string) error {
@@ -84,8 +85,11 @@ func main() {
 	// 実行ユーザーのチェック
 	if os.Geteuid() != 0 {
 		fmt.Fprintln(os.Stderr, "エラー: このスクリプトは root 権限で実行する必要があります。")
+		writeExecutionLog("Exam_v1", "FAILED", "Error: Setup must be run as root.")
 		os.Exit(1)
 	}
+
+	writeExecutionLog("Exam_v1", "STARTED", "Environment setup initiated (excluding LVM/root config logic).")
 
 	fmt.Println("=====================================================")
 	fmt.Println("   RHCSA EX200 v10 模擬試験環境の構築を開始します (Go版)")
@@ -312,4 +316,26 @@ func main() {
 	fmt.Println("🎉 環境セットアップが正常に完了しました！")
 	fmt.Println("これで Canvas 内の全14問に挑戦する準備が整いました。")
 	fmt.Println("=====================================================")
+	writeExecutionLog("Exam_v1", "SUCCESS", "Environment setup completed successfully.")
+}
+
+func writeExecutionLog(progName, status, detail string) {
+	logFile := "/var/log/ex200_execution.log"
+	f, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		logFile = "/tmp/ex200_execution.log"
+		f, err = os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return
+		}
+	}
+	defer f.Close()
+
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	username := "unknown"
+	if u, err := user.Current(); err == nil {
+		username = u.Username
+	}
+
+	fmt.Fprintf(f, "[%s] [%s] User: %s | Status: %s | Details: %s\n", timestamp, progName, username, status, detail)
 }
