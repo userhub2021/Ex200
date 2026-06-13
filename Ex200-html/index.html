@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to nginx! (Web Server Dashboard)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Tab Control Radio Inputs (Pure CSS Tab Switching) -->
+  <input type="radio" id="tab-status" name="tab-navigation" checked class="nav-radio">
+  <input type="radio" id="tab-vhost" name="tab-navigation" class="nav-radio">
+  <input type="radio" id="tab-proxy" name="tab-navigation" class="nav-radio">
+  <input type="radio" id="tab-tune" name="tab-navigation" class="nav-radio">
+
+  <!-- Theme Toggle Checkbox -->
+  <input type="checkbox" id="theme-toggle" class="theme-checkbox">
+
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-group">
+        <!-- SVG Nginx Hexagonal Logo -->
+        <svg viewBox="0 0 36 36" class="nginx-icon-svg">
+          <path d="M18,1 L34,10.2 L34,28.8 L18,38 L2,28.8 L2,10.2 Z" fill="#009639" />
+          <path d="M18,3 L32,11.1 L32,26.9 L18,35 L4,26.9 L4,11.1 Z" fill="#0f141c" />
+          <!-- Stylized N in white/green -->
+          <path d="M10,13 L14,13 L22,23 L22,13 L26,13 L26,27 L22,27 L14,17 L14,27 L10,27 Z" fill="#ffffff" />
+        </svg>
+        <div class="brand-text">
+          <h1>nginx <span>v1.25.4 (RHEL 9)</span></h1>
+        </div>
+      </div>
+      <div class="header-status">
+        <div class="status-dot-pulse"></div>
+        <span>システム稼働中 - オンライン</span>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <span class="hero-badge">Web Server Installed Successfully</span>
+      <h2>Welcome to <span class="gradient-text">nginx!</span></h2>
+      <p class="hero-desc">
+        ウェブサーバーのインストールと初期構成が正常に完了しました。この画面が表示されている場合、nginxサービスは正常にリクエストを受信しています。
+      </p>
+      <div class="btn-group" style="justify-content: center;">
+        <label for="tab-vhost" class="btn-primary" style="cursor: pointer;">
+          <span>⚙️</span> 仮想ホスト構成を開始
+        </label>
+        <a href="https://nginx.org/en/docs/" target="_blank" rel="noopener" class="btn-secondary">
+          <span>📚</span> 公式ドキュメントを見る
+        </a>
+      </div>
+    </section>
+
+    <!-- Telemetry Info Cards Grid -->
+    <section class="dashboard-grid">
+      <div class="info-card">
+        <div class="card-title">
+          <span>サーバー状態</span>
+          <span class="badge-green">ONLINE</span>
+        </div>
+        <div class="card-value" style="color: var(--nginx-green-bright);">Active</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; font-family: var(--font-mono);">Uptime: 2h 45m</div>
+      </div>
+      
+      <div class="info-card">
+        <div class="card-title">
+          <span>アクティブ接続</span>
+          <span>⚡</span>
+        </div>
+        <div class="card-value">3</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; font-family: var(--font-mono);">Reading: 0 | Writing: 1</div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-title">
+          <span>CPU 使用率</span>
+          <span>💻</span>
+        </div>
+        <div class="card-value">1.2 %</div>
+        <div class="gauge-track">
+          <div class="gauge-fill cpu"></div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-title">
+          <span>メモリ負荷</span>
+          <span>🧠</span>
+        </div>
+        <div class="card-value">28.4 %</div>
+        <div class="gauge-track">
+          <div class="gauge-fill ram"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs Content Container -->
+    <section class="tabs-container">
+      
+      <!-- Tab Headers -->
+      <div class="tab-headers">
+        <label for="tab-status" class="tab-header-label">💻 クイックスタート &amp; パス情報</label>
+        <label for="tab-vhost" class="tab-header-label">🌐 仮想ホスト (Server Blocks)</label>
+        <label for="tab-proxy" class="tab-header-label">🔒 リバースプロキシ &amp; SSL</label>
+        <label for="tab-tune" class="tab-header-label">⚡ セキュリティ &amp; チューニング</label>
+      </div>
+
+      <!-- Tab Panel 1: Status & Paths -->
+      <div class="tab-panel" id="panel-status">
+        <div class="panel-card">
+          <h3>📌 初期構成ファイル・ディレクトリパス</h3>
+          <p>RHEL/CentOS環境における主要なファイル配置は以下の通りです。次のステップとして構成ファイルの編集を開始できます。</p>
+          
+          <div class="config-links">
+            <div class="config-item">
+              <h4><span>📁</span> /etc/nginx/nginx.conf</h4>
+              <p>メインの構成ファイル。グローバル設定、イベント駆動、HTTPコンテキスト全体を司ります。</p>
+            </div>
+            <div class="config-item">
+              <h4><span>📁</span> /usr/share/nginx/html</h4>
+              <p>デフォルトのドキュメントルート。現在表示されているこのHTMLはこの配下に格納されています。</p>
+            </div>
+            <div class="config-item">
+              <h4><span>📁</span> /var/log/nginx/access.log</h4>
+              <p>クライアントからのHTTPリクエストがリアルタイムに記録されるデフォルトアクセスログ。</p>
+            </div>
+            <div class="config-item">
+              <h4><span>📁</span> /var/log/nginx/error.log</h4>
+              <p>nginxサーバー自体の動作エラーやリクエスト失敗の原因が記録されるエラーログ。</p>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 2.5rem; margin-bottom: 1rem;">⌨️ サービス管理用の基本コマンド</h3>
+          <p>サーバー起動、状態確認、および構成変更の反映に用いるシステムコマンドです。</p>
+          
+          <div class="terminal-window">
+            <div class="terminal-bar">
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <span class="terminal-title">Web Server Console</span>
+            </div>
+            <div class="terminal-body">
+              <pre><span class="term-comment"># nginx サービスの開始</span>
+<span class="term-prompt">[root@webserver ~]#</span> <span class="term-cmd">systemctl start nginx</span>
+
+<span class="term-comment"># 起動状態とプロセスの稼働ステータス確認</span>
+<span class="term-prompt">[root@webserver ~]#</span> <span class="term-cmd">systemctl status nginx</span>
+
+<span class="term-comment"># OS起動時に自動的にnginxサービスを立ち上げる有効化設定</span>
+<span class="term-prompt">[root@webserver ~]#</span> <span class="term-cmd">systemctl enable nginx</span>
+
+<span class="term-comment"># 設定ファイル変更後の整合性（シンタックスエラー）チェック</span>
+<span class="term-prompt">[root@webserver ~]#</span> <span class="term-cmd">nginx -t</span>
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+<span class="term-comment"># 接続を切断せずに設定を即座に適用するリロード</span>
+<span class="term-prompt">[root@webserver ~]#</span> <span class="term-cmd">systemctl reload nginx</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Panel 2: Virtual Hosts -->
+      <div class="tab-panel" id="panel-vhost">
+        <div class="panel-card">
+          <h3>🌐 バーチャルホスト (Server Blocks) の設定</h3>
+          <p>同一の物理サーバー上で、ドメイン名ごとに異なるディレクトリのコンテンツを配信（仮想ホスト）する最も一般的な構成例です。</p>
+          
+          <p>推奨設定方法として、<code>/etc/nginx/conf.d/</code> ディレクトリに <code>.conf</code> 拡張子で設定を追加します。メインの <code>nginx.conf</code> でこれらのファイルが自動でインクルードされるように定義されています。</p>
+
+          <div class="terminal-window">
+            <div class="terminal-bar">
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <span class="terminal-title">/etc/nginx/conf.d/example.conf</span>
+            </div>
+            <div class="terminal-body">
+              <pre><span class="term-comment"># 新しいドメイン向けのサーバーブロック構成例</span>
+<span class="term-cmd">server</span> {
+    <span class="term-cmd">listen</span>       80;
+    <span class="term-cmd">server_name</span>  example.com www.example.com;
+
+    <span class="term-comment"># ドキュメントルートディレクトリの指定</span>
+    <span class="term-cmd">root</span>         /var/www/example.com/html;
+    <span class="term-cmd">index</span>        index.html index.htm;
+
+    <span class="term-comment"># URLのルーティング設定とリクエストのマッピング</span>
+    <span class="term-cmd">location</span> / {
+        <span class="term-cmd">try_files</span> $uri $uri/ =404;
+    }
+
+    <span class="term-comment"># 404エラーページのカスタム設定</span>
+    <span class="term-cmd">error_page</span> 404 /404.html;
+    <span class="term-cmd">location</span> = /404.html {
+        <span class="term-cmd">root</span>   /usr/share/nginx/html;
+    }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Panel 3: Reverse Proxy & SSL -->
+      <div class="tab-panel" id="panel-proxy">
+        <div class="panel-card">
+          <h3>🔒 リバースプロキシとSSL/TLS（HTTPS）の構成</h3>
+          <p>Node.jsやPython(Gunicorn)、Goなどのアプリケーションサーバーの手前に配置し、暗号化通信の終端とロードバランシングを行うリバースプロキシ設定のテンプレートです。</p>
+          
+          <div class="terminal-window">
+            <div class="terminal-bar">
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <span class="terminal-title">/etc/nginx/conf.d/api_proxy.conf</span>
+            </div>
+            <div class="terminal-body">
+              <pre><span class="term-comment"># 1. HTTPアクセスを自動的にHTTPS（常時SSL）へ301リダイレクトする</span>
+<span class="term-cmd">server</span> {
+    <span class="term-cmd">listen</span>       80;
+    <span class="term-cmd">server_name</span>  api.example.com;
+    <span class="term-cmd">return</span> 301   https://$host$request_uri;
+}
+
+<span class="term-comment"># 2. HTTPS通信を終端し、ローカルのポート3000へプロキシ転送する</span>
+<span class="term-cmd">server</span> {
+    <span class="term-cmd">listen</span>       443 ssl http2;
+    <span class="term-cmd">server_name</span>  api.example.com;
+
+    <span class="term-comment"># SSL証明書のパス設定</span>
+    <span class="term-cmd">ssl_certificate</span>     /etc/pki/tls/certs/api_example.crt;
+    <span class="term-cmd">ssl_certificate_key</span> /etc/pki/tls/private/api_example.key;
+    <span class="term-cmd">ssl_protocols</span>       TLSv1.2 TLSv1.3;
+    <span class="term-cmd">ssl_ciphers</span>         HIGH:!aNULL:!MD5;
+
+    <span class="term-comment"># プロキシフォワード設定</span>
+    <span class="term-cmd">location</span> / {
+        <span class="term-cmd">proxy_pass</span> http://127.0.0.1:3000;
+        <span class="term-cmd">proxy_set_header</span> Host $host;
+        <span class="term-cmd">proxy_set_header</span> X-Real-IP $remote_addr;
+        <span class="term-cmd">proxy_set_header</span> X-Forwarded-For $proxy_add_x_forwarded_for;
+        <span class="term-cmd">proxy_set_header</span> X-Forwarded-Proto $scheme;
+    }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Panel 4: Security & Tuning -->
+      <div class="tab-panel" id="panel-tune">
+        <div class="panel-card">
+          <h3>⚡ セキュリティとパフォーマンス最適化</h3>
+          <p>コンテンツ転送速度の向上と、セキュアなヘッダー設定のための推奨オプションです。</p>
+
+          <div class="terminal-window">
+            <div class="terminal-bar">
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <span class="terminal-title">/etc/nginx/conf.d/security.conf</span>
+            </div>
+            <div class="terminal-body">
+              <pre><span class="term-comment"># 1. バージョン情報を非表示にし攻撃対象としての露出を低減</span>
+<span class="term-cmd">server_tokens</span> off;
+
+<span class="term-comment"># 2. XSSやクリックジャッキング防御用セキュリティヘッダーの設定</span>
+<span class="term-cmd">add_header</span> X-Frame-Options "SAMEORIGIN" always;
+<span class="term-cmd">add_header</span> X-Content-Type-Options "nosniff" always;
+<span class="term-cmd">add_header</span> X-XSS-Protection "1; mode=block" always;
+
+<span class="term-comment"># 3. Gzip圧縮によるアセットファイル転送サイズ軽量化</span>
+<span class="term-cmd">gzip</span>            on;
+<span class="term-cmd">gzip_types</span>      text/plain text/css application/json application/javascript text/xml;
+<span class="term-cmd">gzip_min_length</span> 1000;
+
+<span class="term-comment"># 4. アップロード可能サイズの上限緩和設定 (デフォルトは1M)</span>
+<span class="term-cmd">client_max_body_size</span> 20M;</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+</body>
+</html>
